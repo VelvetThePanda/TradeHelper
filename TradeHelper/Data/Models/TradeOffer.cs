@@ -7,7 +7,7 @@ public class TradeOffer
     /// <summary>
     /// The ID of this trade.
     /// </summary>
-    public Guid Id { get; set; }
+    public Guid ID { get; set; }
     
     /// <summary>
     /// The guild the trade is created on.
@@ -32,7 +32,7 @@ public class TradeOffer
     /// <summary>
     /// The claimer of the trade.
     /// </summary>
-    public TradeUser Claimer { get; set; }
+    public TradeUser? Claimer { get; set; }
     
     /// <summary>
     /// When the trade was claimed.
@@ -55,13 +55,13 @@ public class TradeOffer
     public DateTime? ExpiresAt { get; set; }
     
     /// <summary>
-    /// What the trade will exchange for upon receving <see cref="TradeReceive"/>.
+    /// What the owner is giving.
     /// </summary>
-    public string TradeGiving { get; set; }
+    public string Offering { get; set; }
     
     /// <summary>
-    /// What the trade desires in echange for <see cref="TradeGiving"/>.
+    /// What the owner wants.
     /// </summary>
-    public string TradeReceive { get; set; }
+    public string Requesting { get; set; }
     
 }
