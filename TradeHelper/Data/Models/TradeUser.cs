@@ -9,4 +9,6 @@ public class TradeUser
     public int Reputation { get; set; }
     
     public List<TradeOffer> TradeOffers { get; set; }
+    
+    public List<TradeOffer> ClaimedTrades { get; set; }
 }

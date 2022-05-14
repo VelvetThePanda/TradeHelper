@@ -1,2 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+using Microsoft.EntityFrameworkCore;
+using TradeHelper.Data;
+
+var context = new TradeContext();
+
+context.Database.MigrateAsync();

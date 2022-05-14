@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\Models\Configurations" />
+    <Folder Include="Data\MediatR" />
   </ItemGroup>
 
 </Project>

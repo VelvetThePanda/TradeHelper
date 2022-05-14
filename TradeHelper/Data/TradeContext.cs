@@ -1,12 +1,18 @@
 ﻿using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Remora.Rest.Core;
+using TradeHelper.Data.Models;
 using TradeHelper.Data.Models.Converters;
 
 namespace TradeHelper.Data;
 
 public class TradeContext : DbContext
 {
+    public DbSet<TradeOffer> Trades { get; set; }
+    
+    public DbSet<TradeUser> Users { get; set; }
+
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseSqlite("FileName=TradeHelper.db", options => options.MigrationsAssembly(typeof(TradeContext).Assembly.FullName));
