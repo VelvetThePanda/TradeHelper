@@ -1,7 +1,15 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using TradeHelper.Data;
+using TradeHelper.Data.MediatR;
 
-var context = new TradeContext();
+var services = new ServiceCollection()
+    .AddDbContext<TradeContext>()
+    .AddMediatR(typeof(TradeContext))
+    .BuildServiceProvider();
+    
+var mediator = services.GetService<IMediator>();
 
-context.Database.MigrateAsync();
+await mediator.Send(new UserExists.Request(default));
