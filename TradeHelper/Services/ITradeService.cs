@@ -13,12 +13,12 @@ public interface ITradeService
     /// Creates a new trade offer.
     /// </summary>
     /// <param name="guildID">The ID of the guild the trade is being created on.</param>
-    /// <param name="creatorID">The ID of the creator of the trade.</param>
+    /// <param name="userID">The ID of the creator of the trade.</param>
     /// <param name="expiresAt">When the trade expires, if ever.</param>
     /// <param name="requesting">What the trade requests.</param>
     /// <param name="offering">The offer of the trade, in return for <see cref="requesting"/>.</param>
     /// <returns>A result with the created trade, or an error.</returns>
-    Task<Result<TradeOfferDTO>> CreateTradeOfferAysync(Snowflake guildID, Snowflake creatorID, DateTime? expiresAt, string requesting, string offering);
+    Task<Result<TradeOfferDTO>> CreateTradeOfferAysync(Snowflake guildID, Snowflake userID, DateTime? expiresAt, string requesting, string offering);
     
     /// <summary>
     /// Attempts to claim a trade offer.

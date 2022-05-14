@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Remora.Rest.Core;
 using TradeHelper.Data.DTOs;
 
@@ -19,7 +20,11 @@ public static class GetUser
 
         public async Task<TradeUserDTO?> Handle(Request request, CancellationToken cancellationToken)
         {
-            var user = await _context.Users.FindAsync(request.ID);
+            var user = await _context.Users
+                .Include(u => u.TradeOffers)
+                .Include(u => u.ClaimedTrades)
+                .FirstOrDefaultAsync(u => u.ID == request.ID);
+            
             return user?.ToDTO();
         }
     }
