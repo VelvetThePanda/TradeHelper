@@ -1,4 +1,5 @@
 ﻿using Remora.Rest.Core;
+using TradeHelper.Data.DTOs;
 
 namespace TradeHelper.Data.Models;
 
@@ -8,6 +9,11 @@ public class TradeOffer
     /// The ID of this trade.
     /// </summary>
     public Guid ID { get; set; }
+    
+    /// <summary>
+    /// The status of the trade.
+    /// </summary>
+    public TradeStatus Status { get; set; }
     
     /// <summary>
     /// The guild the trade is created on.
@@ -64,4 +70,5 @@ public class TradeOffer
     /// </summary>
     public string Requesting { get; set; }
     
+    public static TradeOfferDTO ToDTO(TradeOffer to) => new(to.ID, to.Status, to.GuildID, to.OwnerID, to.ClaimerID, to.CreatedAt, to.ClaimedAt, to.ExpiresAt, to.Offering, to.Requesting);
 }

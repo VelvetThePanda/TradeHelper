@@ -4,9 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Remora.Commands.Extensions;
 using Remora.Discord.Commands.Extensions;
 using Remora.Discord.Commands.Services;
 using Remora.Discord.Hosting.Extensions;
+using TradeHelper.Commands;
 using TradeHelper.Data;
 using TradeHelper.Data.MediatR;
 
@@ -22,9 +25,13 @@ var host = Host.CreateDefaultBuilder()
         services
             .AddMediatR(typeof(TradeContext))
             .AddDbContext<TradeContext>()
-            .AddDiscordCommands(true);
+            .AddDiscordCommands(true)
+            .AddCommandTree()
+            .WithCommandGroup<TestCommand>()
+            .Finish();
     })
     .AddDiscordService(s => s.GetRequiredService<IConfiguration>().GetConnectionString("Discord"))
+    .ConfigureLogging(b => b.AddFilter("System.Net.*", LogLevel.Error))
     .UseConsoleLifetime()
     .Build();
     

@@ -2,4 +2,4 @@
 
 namespace TradeHelper.Data.DTOs;
 
-public record TradeUserDTO(Snowflake ID, int Reputation, IReadOnlyList<TradeOfferDTO> TradeOffers);
+public record TradeUserDTO(Snowflake ID, int Reputation, IReadOnlyList<TradeOfferDTO> TradeOffers, IReadOnlyList<TradeOfferDTO> ClaimedTrades);
