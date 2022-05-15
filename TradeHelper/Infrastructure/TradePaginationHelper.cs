@@ -28,15 +28,19 @@ public static class TradePaginationHelper
                 .AppendLine($"Created: <t:{((DateTimeOffset)item.CreatedAt).ToUnixTimeSeconds()}:R>")
                 .Append("Status: ");
 
+            
             if (item.Status is TradeStatus.InProgress)
             {
                 sb.AppendLine($"In Progress | Claimed by <@{item.ClaimerID}> <t:{((DateTimeOffset)item.ClaimedAt).ToUnixTimeSeconds()}:R>");
             }
             else if (item.Status is TradeStatus.Completed)
             {
-                sb.AppendLine($"Completed <t:{((DateTimeOffset)item.CompletedAt).ToUnixTimeSeconds()}:R> by <@{item.ClaimerID}> <t:{((DateTimeOffset)item.ClaimedAt).ToUnixTimeMilliseconds()}:R>");
+                sb.AppendLine($"Completed <t:{((DateTimeOffset)item.CompletedAt).ToUnixTimeSeconds()}:R> by <@{item.ClaimerID}> <t:{((DateTimeOffset)item.ClaimedAt).ToUnixTimeSeconds()}:R>");
             }
-
+            else
+            {
+                sb.AppendLine("**Unclaimed**");
+            }
 
             var embed = new Embed
             {
@@ -62,10 +66,10 @@ public static class TradePaginationHelper
 
         components = new IMessageComponent[1] { new ActionRowComponent(buttons) };
 
-        if (page is 1)
+        if (page <= 1)
             buttons[0] = buttons[0] with { IsDisabled = true };
 
-        if (page >= (int)(trades.Count / 10) + 1)
+        if (page >= (int)(trades.Count / 10))
             buttons[1] = buttons[1] with { IsDisabled = true };
         
         embeds = embedList;

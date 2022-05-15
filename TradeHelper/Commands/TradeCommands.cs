@@ -157,7 +157,7 @@ public class TradeCommands : CommandGroup
         if (!result.IsDefined(out var trades))
             return Result.FromSuccess(); // p sure this means there's no trades?
 
-        TradePaginationHelper.GetEmbedsAndComponents(trades, 0, filter.ToString().ToLower(), userID, out IReadOnlyList<IEmbed> embeds, out IReadOnlyList<IMessageComponent> components);
+        TradePaginationHelper.GetEmbedsAndComponents(trades, 1, filter.ToString().ToLower(), userID, out IReadOnlyList<IEmbed> embeds, out IReadOnlyList<IMessageComponent> components);
         
         return await _interactions.EditOriginalInteractionResponseAsync
         (
