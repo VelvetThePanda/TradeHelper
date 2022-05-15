@@ -31,8 +31,19 @@ public class TradeCreateModal : IModalInteractiveEntity
         var want = ((IPartialTextInputComponent)((IPartialActionRowComponent)components[0]).Components.Value[0]).Value.Value;
         var give = ((IPartialTextInputComponent)((IPartialActionRowComponent)components[1]).Components.Value[0]).Value.Value;
 
-        await _tradeService.CreateTradeOfferAysync(_context.GuildID.Value, user.ID, null, want, give);
-
+        var trade = await _tradeService.CreateTradeOfferAysync(_context.GuildID.Value, user.ID, null, want, give);
+        
+        
+        var interactionResult = await _interactions.CreateFollowupMessageAsync
+            (
+                _context.ApplicationID,
+                _context.Token,
+                trade.IsSuccess 
+                    ? $"Trade created with ID {trade.Entity.ID}"
+                    : $"Something went wrong while trying to create the trade.",
+                flags: MessageFlags.Ephemeral
+            );
+        
         return Result.FromSuccess();
     }
 }
