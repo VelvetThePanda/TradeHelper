@@ -169,8 +169,7 @@ public class TradeCommands : CommandGroup
             "Successfully revoked trade offer. It will appear as unclaimed in the list of trade offers."
         );
     }
-    
-    
+
     [Command("cancel")]
     [Description("Cancels a trade offer")]
     public async Task<IResult> ComleteAsync
@@ -196,6 +195,40 @@ public class TradeCommands : CommandGroup
         );
     }
     
+    [Command("complete")]
+    [Description("Completes a trade offer")]
+    public async Task<IResult> CompleteAsync
+    (
+        [Option("complete_id")]
+        [Description("The trade to complete.")]
+        string rawCompleteID
+    )
+    {
+        if (!Guid.TryParse(rawCompleteID, out var completeID))
+            return await _interactions.EditOriginalInteractionResponseAsync(_context.ApplicationID, _context.Token, "That is not a valid ID.");
+        
+        var completeResult = await _trades.CompleteTradeOfferAsync(completeID, _context.User.ID);
+        
+        if (!completeResult.IsDefined(out var complete))
+            return await _interactions.EditOriginalInteractionResponseAsync(_context.ApplicationID, _context.Token, completeResult.Error.Message);
+        
+        var channelResult = await _users.CreateDMAsync(completeResult.Entity.ClaimerID.Value);
+        
+        if (channelResult.IsDefined(out var DM))
+            await _chennels.CreateMessageAsync
+            (
+                DM.ID,
+                $"The trade offer you claimed (ID: `{completeResult.Entity.ID}`) has been **completed**."
+            );
+        
+        return await _interactions.EditOriginalInteractionResponseAsync
+        (
+            _context.ApplicationID,
+            _context.Token,
+            "Successfully completed trade offer. The claimer will be notified."
+        );
+
+    }
     
     [Command("list")]
     [Description("Lists all, a user's, or your own trade offer(s)")]
