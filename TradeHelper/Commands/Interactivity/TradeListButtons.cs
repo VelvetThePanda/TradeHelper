@@ -18,7 +18,7 @@ namespace TradeHelper.Commands.Interactivity;
 
 public class TradeListButtons : IButtonInteractiveEntity
 {
-    private static readonly Regex _regex = new(@"^trade-list-(?<type>\S{4-6})-page(?<page>\d+)-?(?<ID>\d+)?$");
+    private static readonly Regex _regex = new(@"^trade-list-(?<type>\S{4,6})-page(?<page>\d+)-(?<ID>\d+)?$");
 
     private readonly ITradeService _trades;
     private readonly InteractionContext _context;
