@@ -8,18 +8,25 @@ using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Attributes;
 using Remora.Discord.Commands.Contexts;
 using Remora.Results;
+using TradeHelper.Services;
 
 namespace TradeHelper.Commands;
 
 [Group("trade")]
 public class TradeCommands : CommandGroup
 {
+    private readonly ITradeService _trades;
     private readonly InteractionContext _context;
+    private readonly IDiscordRestUserAPI _users;
+    private readonly IDiscordRestChannelAPI _chennels;
     private readonly IDiscordRestInteractionAPI _interactions;
     
-    public TradeCommands(InteractionContext context, IDiscordRestInteractionAPI interactions)
+    public TradeCommands(ITradeService trades, InteractionContext context, IDiscordRestUserAPI users, IDiscordRestChannelAPI chennels, IDiscordRestInteractionAPI interactions)
     {
+        _trades = trades;
         _context = context;
+        _users = users;
+        _chennels = chennels;
         _interactions = interactions;
     }
     
@@ -30,10 +37,39 @@ public class TradeCommands : CommandGroup
     (
         [Option("claim_id")]
         [Description("The trade to claim.")]
-        string claimID
+        string rawClaimID
     )
     {
-        return Result.FromSuccess();
+        if (!Guid.TryParse(rawClaimID, out var claimID))
+            return await _interactions.EditOriginalInteractionResponseAsync(_context.ApplicationID, _context.Token, "That is not a valid claim ID.");
+        
+        
+        var claimResult = await _trades.ClaimTradeOfferAsync(claimID, _context.User.ID);
+        
+        if (!claimResult.IsDefined(out var claim))
+            return await _interactions.EditOriginalInteractionResponseAsync(_context.ApplicationID, _context.Token, claimResult.Error.Message);
+
+        var channelResult = await _users.CreateDMAsync(claimResult.Entity.OwnerID);
+
+        // If we can't DM them, don't worry about it. | TODO: Break this into a service?
+        if (channelResult.IsDefined(out var channel))
+        {
+            await _chennels.CreateMessageAsync
+            (
+                channel.ID,
+             $"Your trade offer (ID: `{claim.ID}`) has been claimed by <@{_context.User.ID}> (**{_context.User.Username}#{_context.User.Discriminator:0000}**).\n" +
+                $"If the trade is not completed within a reasonable amount of time, you can revoke it by running `/trade cancel {claim.ID}`."
+            );
+        }
+        
+        return await _interactions.EditOriginalInteractionResponseAsync
+        (
+            _context.ApplicationID,
+            _context.Token,
+            "Successfully claimed the trade offer.\n" +
+            "The owner of this trade will be notified that you have claimed it."    
+        );
+
     }
 
     [Command("create")]
