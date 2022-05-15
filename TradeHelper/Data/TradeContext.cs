@@ -11,12 +11,7 @@ public class TradeContext : DbContext
     public DbSet<TradeOffer> Trades { get; set; }
     
     public DbSet<TradeUser> Users { get; set; }
-
-    public TradeContext(DbContextOptions<TradeContext> options) : base(options)
-    {
-        
-    }
-
+    
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseSqlite("FileName=TradeHelper.db", options => options.MigrationsAssembly(typeof(TradeContext).Assembly.FullName));
