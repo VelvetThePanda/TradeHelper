@@ -22,6 +22,7 @@ public static class CreateTradeOffer
             {
                 GuildID = request.GuildID,
                 OwnerID = request.OwnerID,
+                CreatedAt = DateTime.UtcNow,
                 ExpiresAt = request.ExpiresAt,
                 Requesting = request.Requesting,
                 Offering = request.Offering
