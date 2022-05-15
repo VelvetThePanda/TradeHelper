@@ -148,11 +148,10 @@ public class TradeCommands : CommandGroup
         IUser? user = null
     )
     {
-
         var filter = viewType ?? TradeViewType.Global;
         var userID = user?.ID ?? _context.User.ID;
         
-        var result = await _trades.GetTradeOffersAsync(_context.GuildID.Value, userID);
+        var result = await _trades.GetTradeOffersAsync(_context.GuildID.Value, filter is TradeViewType.Global ? null : userID);
 
         if (!result.IsDefined(out var trades))
             return Result.FromSuccess(); // p sure this means there's no trades?
