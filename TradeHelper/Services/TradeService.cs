@@ -55,7 +55,7 @@ public class TradeService : ITradeService
             return Result<TradeOfferDTO>.FromError(new InvalidOperationError("You can't un-claim your own trade. Perhaps you meant to delist it?"));
         
         if (trade.Status is TradeStatus.Unclaimed)
-            return Result<TradeOfferDTO>.FromError(new InvalidOperationError("This trade is currently wasn't claimed to begin with."));
+            return Result<TradeOfferDTO>.FromError(new InvalidOperationError("This trade wasn't claimed to begin with."));
         
         if (trade.ClaimerID != userID)
             return Result<TradeOfferDTO>.FromError(new InvalidOperationError("You can only un-claim trades you claimed."));
@@ -79,7 +79,7 @@ public class TradeService : ITradeService
             return Result<TradeOfferDTO>.FromError(new InvalidOperationError("You can't cancel a trade you didn't create."));
 
         if (trade.Status is TradeStatus.Unclaimed)
-            return Result<TradeOfferDTO>.FromError(new InvalidOperationError("This trade is currently wasn't claimed to begin with."));
+            return Result<TradeOfferDTO>.FromError(new InvalidOperationError("This trade wasn't claimed to begin with."));
         
         if (trade.ClaimerID is null)
             return Result<TradeOfferDTO>.FromError(new InvalidOperationError("You can only cancel a trade "));
@@ -103,7 +103,7 @@ public class TradeService : ITradeService
             return Result<TradeOfferDTO>.FromError(new InvalidOperationError("You can't complete a trade you didn't create."));
 
         if (trade.Status is TradeStatus.Unclaimed)
-            return Result<TradeOfferDTO>.FromError(new InvalidOperationError("This trade is currently wasn't claimed to begin with."));
+            return Result<TradeOfferDTO>.FromError(new InvalidOperationError("This trade wasn't claimed to begin with."));
         
         if (trade.ClaimerID is null)
             return Result<TradeOfferDTO>.FromError(new InvalidOperationError("This trade hasn't been claimed. Did you mean to delist it?"));
