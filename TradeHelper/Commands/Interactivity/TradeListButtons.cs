@@ -24,6 +24,13 @@ public class TradeListButtons : IButtonInteractiveEntity
     private readonly InteractionContext _context;
     private readonly IDiscordRestInteractionAPI _interactions;
     
+    public TradeListButtons(ITradeService trades, InteractionContext context, IDiscordRestInteractionAPI interactions)
+    {
+        _trades = trades;
+        _context = context;
+        _interactions = interactions;
+    }
+    
     public async Task<Result<bool>> IsInterestedAsync(ComponentType? componentType, string customID, CancellationToken ct)
         => Result<bool>.FromSuccess(_regex.IsMatch(customID));
 
