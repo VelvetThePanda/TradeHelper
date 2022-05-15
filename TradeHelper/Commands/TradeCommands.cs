@@ -13,6 +13,7 @@ using TradeHelper.Services;
 
 namespace TradeHelper.Commands;
 
+[Ephemeral]
 [Group("trade")]
 [DiscordDefaultDMPermission(false)]
 public class TradeCommands : CommandGroup
@@ -32,7 +33,41 @@ public class TradeCommands : CommandGroup
         _interactions = interactions;
     }
     
-    [Ephemeral]
+    [Command("create")]
+    [SuppressInteractionResponse(true)]
+    [Description("Creates a trade offer")]
+    public async Task<IResult> CreateAsync()
+    {
+        var data = new InteractionModalCallbackData
+        (
+            "create-trade",
+            "Trade Details",
+            new []
+            {
+                new ActionRowComponent
+                (
+                    new[]
+                    {
+                        new TextInputComponent("trade-receive", TextInputStyle.Short, "Trading For (Requesting)", default, 50, default, default, "What do you want?"),
+                    }
+                ),
+                new ActionRowComponent
+                (
+                    new[]
+                    {
+                        new TextInputComponent("trade-offer", TextInputStyle.Short, "Trading For (Offering)", default, 50, default, default, "What do you offer?"),
+                    }
+                ),
+            }
+        );
+
+        var response = new InteractionResponse(InteractionCallbackType.Modal, new(data));
+
+        var res = await _interactions.CreateInteractionResponseAsync(_context.ID, _context.Token, response);
+
+        return res;
+    }
+    
     [Command("claim")]
     [Description("Claims a trade offer")]
     public async Task<IResult> Claim
@@ -71,42 +106,43 @@ public class TradeCommands : CommandGroup
             "Successfully claimed the trade offer.\n" +
             "The owner of this trade will be notified that you have claimed it."    
         );
-
     }
 
-    [Command("create")]
-    [SuppressInteractionResponse(true)]
-    [Description("Creates a trade offer")]
-    public async Task<IResult> CreateAsync()
+    [Command("unclaim")]
+    [Description("Unclaims a trade offer")]
+    public async Task<IResult> UnclaimAsync
+    (
+        [Option("unclaim_id")] 
+        [Description("The trade to unclaim.")]
+        string rawUnclaimID
+    )
     {
-        var data = new InteractionModalCallbackData
+        if (!Guid.TryParse(rawUnclaimID, out var claimID))
+            return await _interactions.EditOriginalInteractionResponseAsync(_context.ApplicationID, _context.Token, "That is not a valid claim ID.");
+
+        var claimResult = await _trades.UnclaimTradeOfferAsync(claimID, _context.User.ID);
+        
+        if (!claimResult.IsDefined(out var claim))
+            return await _interactions.EditOriginalInteractionResponseAsync(_context.ApplicationID, _context.Token, claimResult.Error.Message);
+
+        var channelResult = await _users.CreateDMAsync(claimResult.Entity.OwnerID);
+
+        // If we can't DM them, don't worry about it. | TODO: Break this into a service?
+        if (channelResult.IsDefined(out var channel))
+        {
+            await _chennels.CreateMessageAsync
+            (
+                channel.ID,
+                $"Your trade offer (ID: `{claim.ID}`) previously claimed by <@{_context.User.ID}> (**{_context.User.Username}#{_context.User.Discriminator:0000}**) has been **unclaimed**.\n"
+            );
+        }
+        
+        return await _interactions.EditOriginalInteractionResponseAsync
         (
-            "create-trade",
-            "Trade Details",
-            new []
-            {
-                new ActionRowComponent
-                (
-                    new[]
-                    {
-                        new TextInputComponent("trade-receive", TextInputStyle.Short, "Trading For (Requesting)", default, 50, default, default, "What do you want?"),
-                    }
-                ),
-                new ActionRowComponent
-                (
-                    new[]
-                    {
-                        new TextInputComponent("trade-offer", TextInputStyle.Short, "Trading For (Offering)", default, 50, default, default, "What do you offer?"),
-                    }
-                ),
-            }
+            _context.ApplicationID,
+            _context.Token,
+            "Success. The owner of this trade will be notified that you have un-claimed it."    
         );
-
-        var response = new InteractionResponse(InteractionCallbackType.Modal, new(data));
-
-        var res = await _interactions.CreateInteractionResponseAsync(_context.ID, _context.Token, response);
-
-        return res;
     }
     
     [Command("cancel")]
@@ -134,7 +170,33 @@ public class TradeCommands : CommandGroup
         );
     }
     
-    [Ephemeral(true)]
+    
+    [Command("cancel")]
+    [Description("Cancels a trade offer")]
+    public async Task<IResult> ComleteAsync
+    (
+        [Option("cancel_id")]
+        [Description("The trade to cancel.")]
+        string rawCancelID
+    )
+    {
+        if (!Guid.TryParse(rawCancelID, out var cancelID))
+            return await _interactions.EditOriginalInteractionResponseAsync(_context.ApplicationID, _context.Token, "That is not a valid cancel ID.");
+        
+        var cancelResult = await _trades.CancelTradeOfferAsync(cancelID, _context.User.ID);
+        
+        if (!cancelResult.IsDefined(out var cancel))
+            return await _interactions.EditOriginalInteractionResponseAsync(_context.ApplicationID, _context.Token, cancelResult.Error.Message);
+
+        return await _interactions.EditOriginalInteractionResponseAsync
+        (
+            _context.ApplicationID,
+            _context.Token,
+            "Successfully revoked trade offer. It will appear as unclaimed in the list of trade offers."
+        );
+    }
+    
+    
     [Command("list")]
     [Description("Lists all, a user's, or your own trade offer(s)")]
     public async Task<IResult> ListAsync
