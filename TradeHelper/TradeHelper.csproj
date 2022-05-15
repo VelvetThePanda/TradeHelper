@@ -24,10 +24,4 @@
     <PackageReference Include="Remora.Discord" Version="2022.28.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="TradeHelper.db">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>

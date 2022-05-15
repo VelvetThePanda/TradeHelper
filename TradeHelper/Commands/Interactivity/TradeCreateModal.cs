@@ -1,4 +1,5 @@
 ﻿using Remora.Discord.API.Abstractions.Objects;
+using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Contexts;
 using Remora.Discord.Interactivity;
@@ -11,13 +12,15 @@ public class TradeCreateModal : IModalInteractiveEntity
 {
     private readonly ITradeService _tradeService;
     private readonly InteractionContext _context;
+    private readonly IDiscordRestInteractionAPI _interactions;
     
-    public TradeCreateModal(ITradeService tradeService, InteractionContext context)
+    public TradeCreateModal(ITradeService tradeService, InteractionContext context, IDiscordRestInteractionAPI interactions)
     {
         _tradeService = tradeService;
-        _context = context;
+        _context      = context;
+        _interactions = interactions;
     }
-    
+
     public async Task<Result<bool>> IsInterestedAsync(ComponentType? componentType, string customID, CancellationToken ct)
     {
         return Result<bool>.FromSuccess(customID is "create-trade");
