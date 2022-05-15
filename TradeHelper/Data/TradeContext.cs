@@ -12,6 +12,10 @@ public class TradeContext : DbContext
     
     public DbSet<TradeUser> Users { get; set; }
 
+    public TradeContext(DbContextOptions<TradeContext> options) : base(options)
+    {
+        
+    }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

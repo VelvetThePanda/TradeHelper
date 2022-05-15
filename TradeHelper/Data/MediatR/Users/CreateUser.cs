@@ -16,6 +16,11 @@ public static class CreateUser
 
         public async Task<Unit> Handle(Request request, CancellationToken cancellationToken)
         {
+            var existingUser = await _db.Users.FindAsync(request.ID);
+            
+            if (existingUser is not null)
+                return Unit.Value;
+
             var user = new TradeUser() { ID = request.ID };
             _db.Add(user);
             

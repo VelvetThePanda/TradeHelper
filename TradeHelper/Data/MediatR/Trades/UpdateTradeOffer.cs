@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Remora.Rest.Core;
 using Remora.Results;
 using TradeHelper.Data.DTOs;
@@ -18,15 +19,15 @@ public static class UpdateTradeOffer
 
         public async Task<Result<TradeOfferDTO>> Handle(Request request, CancellationToken cancellationToken)
         {
-            var trade = await _db.Trades.FindAsync(request.ID);
-
+            var trade = await _db.Trades
+                .FirstOrDefaultAsync(t => t.ID == request.ID, cancellationToken);
+            
             if (trade is null)
                 return Result<TradeOfferDTO>.FromError(new NotFoundError($"There is no trade by the ID of {request.ID}."));
             
-            
             trade.Status = request.Status;
             trade.ClaimerID = request.ClaimerID;
-
+            
             trade.ClaimedAt = trade.Status switch
             {
                 TradeStatus.Unclaimed => null,
