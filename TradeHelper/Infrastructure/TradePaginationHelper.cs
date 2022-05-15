@@ -23,10 +23,10 @@ public static class TradePaginationHelper
             sb.Clear();
 
             sb
-                .AppendLine($"<@{item.OwnerID}> is offering **{item.Offering}**")
-                .AppendLine($"In exchange of **{item.Requesting}**")
-                .AppendLine($"Created: <t:{((DateTimeOffset)item.CreatedAt).ToUnixTimeSeconds()}:R>")
-                .Append("Status: ");
+            .AppendLine($"<@{item.OwnerID}> is offering **{item.Offering}**")
+            .AppendLine($"In exchange of **{item.Requesting}**")
+            .AppendLine($"Created: <t:{((DateTimeOffset)item.CreatedAt).ToUnixTimeSeconds()}:R>")
+            .Append("Status: ");
 
             
             if (item.Status is TradeStatus.InProgress)
