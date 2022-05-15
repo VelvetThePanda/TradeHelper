@@ -8,11 +8,13 @@ using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Attributes;
 using Remora.Discord.Commands.Contexts;
 using Remora.Results;
+using TradeHelper.Infrastructure;
 using TradeHelper.Services;
 
 namespace TradeHelper.Commands;
 
 [Group("trade")]
+[DiscordDefaultDMPermission(false)]
 public class TradeCommands : CommandGroup
 {
     private readonly ITradeService _trades;
@@ -106,4 +108,64 @@ public class TradeCommands : CommandGroup
 
         return res;
     }
+    
+    [Command("cancel")]
+    [Description("Cancels a trade offer")]
+    public async Task<IResult> CancelAsync
+    (
+        [Option("cancel_id")]
+        [Description("The trade to cancel.")]
+        string rawCancelID
+    )
+    {
+        if (!Guid.TryParse(rawCancelID, out var cancelID))
+            return await _interactions.EditOriginalInteractionResponseAsync(_context.ApplicationID, _context.Token, "That is not a valid cancel ID.");
+        
+        var cancelResult = await _trades.CancelTradeOfferAsync(cancelID, _context.User.ID);
+        
+        if (!cancelResult.IsDefined(out var cancel))
+            return await _interactions.EditOriginalInteractionResponseAsync(_context.ApplicationID, _context.Token, cancelResult.Error.Message);
+
+        return await _interactions.EditOriginalInteractionResponseAsync
+        (
+            _context.ApplicationID,
+            _context.Token,
+            "Successfully revoked trade offer. It will appear as unclaimed in the list of trade offers."
+        );
+    }
+    
+    [Ephemeral(true)]
+    [Command("list")]
+    [Description("Lists all, a user's, or your own trade offer(s)")]
+    public async Task<IResult> ListAsync
+    (
+        [Option("filter")]
+        [Description("The filter to use when listing trade offers.")]
+        TradeViewType? viewType = null,
+        
+        [Option("user")]
+        [Description("The user to list trade offers for.")]
+        IUser? user = null
+    )
+    {
+
+        var filter = viewType ?? TradeViewType.Global;
+        var userID = user?.ID ?? _context.User.ID;
+        
+        var result = await _trades.GetTradeOffersAsync(_context.GuildID.Value, userID);
+
+        if (!result.IsDefined(out var trades))
+            return Result.FromSuccess(); // p sure this means there's no trades?
+
+        TradePaginationHelper.GetEmbedsAndComponents(trades, 0, filter.ToString().ToLower(), userID, out IReadOnlyList<IEmbed> embeds, out IReadOnlyList<IMessageComponent> components);
+        
+        return await _interactions.EditOriginalInteractionResponseAsync
+        (
+            _context.ApplicationID,
+            _context.Token,
+            embeds: new(embeds),
+            components: new(components)
+        );
+    }
+
 }

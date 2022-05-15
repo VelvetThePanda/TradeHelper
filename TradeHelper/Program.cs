@@ -35,7 +35,8 @@ var host = Host.CreateDefaultBuilder()
             .Finish()
             .AddScoped<ITradeService, TradeService>()
             .AddInteractivity()
-            .AddInteractiveEntity<TradeCreateModal>();
+            .AddInteractiveEntity<TradeCreateModal>()
+            .AddInteractiveEntity<TradeListButtons>();
     })
     .AddDiscordService(s => s.GetRequiredService<IConfiguration>().GetConnectionString("Discord"))
     .ConfigureLogging(b => b.AddFilter("System.Net.*", LogLevel.Error))
