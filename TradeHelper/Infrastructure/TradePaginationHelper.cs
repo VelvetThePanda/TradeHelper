@@ -65,7 +65,7 @@ public static class TradePaginationHelper
         if (page is 1)
             buttons[0] = buttons[0] with { IsDisabled = true };
 
-        if (page >= trades.Count / 10 + 1)
+        if (page >= (int)(trades.Count / 10) + 1)
             buttons[1] = buttons[1] with { IsDisabled = true };
         
         embeds = embedList;
