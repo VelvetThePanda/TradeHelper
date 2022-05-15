@@ -26,7 +26,7 @@ public interface ITradeService
     /// <param name="tradeOfferID">The ID of the trade to claim.</param>
     /// <param name="userID">The ID of the user that claimed the trade.</param>
     /// <returns>A result that may or not have succeeded.</returns>
-    Task<Result> ClaimTradeOfferAsync(Guid tradeOfferID, Snowflake userID);
+    Task<Result<TradeOfferDTO>> ClaimTradeOfferAsync(Guid tradeOfferID, Snowflake userID);
 
     /// <summary>
     /// Un-claims a trade offer.
@@ -34,7 +34,7 @@ public interface ITradeService
     /// <param name="tradeOfferID">The ID of the trade to unclaim.</param>
     /// <param name="userID">The ID of the user that's unclaiming the trade.</param>
     /// <returns>A result that may or not have succeeded.</returns>
-    Task<Result> UnclaimTradeOfferAsync(Guid tradeOfferID, Snowflake userID);
+    Task<Result<TradeOfferDTO>> UnclaimTradeOfferAsync(Guid tradeOfferID, Snowflake userID);
     
     /// <summary>
     /// Cancels a trade offer.
@@ -42,7 +42,7 @@ public interface ITradeService
     /// <param name="tradeOfferID">The ID of the trade that's being cancelled.</param>
     /// <param name="userID">The ID of the user that cancelled the trade.</param>
     /// <returns>A result that may or not have succeeded.</returns>
-    Task<Result> CancelTradeOfferAsync(Guid tradeOfferID, Snowflake userID);
+    Task<Result<TradeOfferDTO>> CancelTradeOfferAsync(Guid tradeOfferID, Snowflake userID);
     
     /// <summary>
     /// Completes a trade offer.
@@ -50,7 +50,7 @@ public interface ITradeService
     /// <param name="tradeOfferID">The ID of the offer that's being completed.</param>
     /// <param name="userID">The ID of the user attempting to complete the trade.</param>
     /// <returns>A result that may or not have succeeded.</returns>
-    Task<Result> CompleteTradeOfferAsync(Guid tradeOfferID, Snowflake userID);
+    Task<Result<TradeOfferDTO>> CompleteTradeOfferAsync(Guid tradeOfferID, Snowflake userID);
     
     /// <summary>
     /// Unlists a trade offer.
@@ -58,7 +58,7 @@ public interface ITradeService
     /// <param name="tradeOfferID">The ID of the trade that's being unlisted.</param>
     /// <param name="userID">The ID of the user attempting to unlist the trade.</param>
     /// <returns>A result that may or not have succeeded.</returns>
-    Task<Result> DeleteTradeOfferAsync(Guid tradeOfferID, Snowflake userID);
+    Task<Result<TradeOfferDTO>> DeleteTradeOfferAsync(Guid tradeOfferID, Snowflake userID);
     
     /// <summary>
     /// Gets all the available trade offers for a guild.

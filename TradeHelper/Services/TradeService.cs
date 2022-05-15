@@ -21,116 +21,116 @@ public class TradeService : ITradeService
         return await _mediator.Send(new CreateTradeOffer.Request(guildID, userID, expiresAt, requesting, offering));
     }
 
-    public async Task<Result> ClaimTradeOfferAsync(Guid tradeOfferID, Snowflake userID)
+    public async Task<Result<TradeOfferDTO>> ClaimTradeOfferAsync(Guid tradeOfferID, Snowflake userID)
     {
         await _mediator.Send(new CreateUser.Request(userID));
         
         var trade = await _mediator.Send(new GetTradeOffer.Request(tradeOfferID));
 
         if (trade is null)
-            return Result.FromError(new NotFoundError("A trade with that ID doesn't exist."));
+            return Result<TradeOfferDTO>.FromError(new NotFoundError("A trade with that ID doesn't exist."));
 
         if (trade.OwnerID == userID)
-            return Result.FromError(new InvalidOperationError("You can't claim your own trade. Perhaps you meant to delist it?"));
+            return Result<TradeOfferDTO>.FromError(new InvalidOperationError("You can't claim your own trade. Perhaps you meant to delist it?"));
         
         if (trade.Status is TradeStatus.InProgress)
-            return Result.FromError(new InvalidOperationError("This trade is currently in progress. If it becomes unclaimed, you can claim it."));
+            return Result<TradeOfferDTO>.FromError(new InvalidOperationError("This trade is currently in progress. If it becomes unclaimed, you can claim it."));
         
         if (trade.Status is TradeStatus.Completed)
-            return Result.FromError(new InvalidOperationError("This trade has already been completed."));
+            return Result<TradeOfferDTO>.FromError(new InvalidOperationError("This trade has already been completed."));
 
         return await _mediator.Send(new UpdateTradeOffer.Request(tradeOfferID, userID, TradeStatus.InProgress));
     }
 
-    public async Task<Result> UnclaimTradeOfferAsync(Guid tradeOfferID, Snowflake userID)
+    public async Task<Result<TradeOfferDTO>> UnclaimTradeOfferAsync(Guid tradeOfferID, Snowflake userID)
     {
         await _mediator.Send(new CreateUser.Request(userID));
         
         var trade = await _mediator.Send(new GetTradeOffer.Request(tradeOfferID));
 
         if (trade is null)
-            return Result.FromError(new NotFoundError("A trade with that ID doesn't exist."));
+            return Result<TradeOfferDTO>.FromError(new NotFoundError("A trade with that ID doesn't exist."));
 
         if (trade.OwnerID == userID)
-            return Result.FromError(new InvalidOperationError("You can't un-claim your own trade. Perhaps you meant to delist it?"));
+            return Result<TradeOfferDTO>.FromError(new InvalidOperationError("You can't un-claim your own trade. Perhaps you meant to delist it?"));
         
         if (trade.Status is TradeStatus.Unclaimed)
-            return Result.FromError(new InvalidOperationError("This trade is currently wasn't claimed to begin with."));
+            return Result<TradeOfferDTO>.FromError(new InvalidOperationError("This trade is currently wasn't claimed to begin with."));
         
         if (trade.ClaimerID != userID)
-            return Result.FromError(new InvalidOperationError("You can only un-claim trades you claimed."));
+            return Result<TradeOfferDTO>.FromError(new InvalidOperationError("You can only un-claim trades you claimed."));
 
         if (trade.Status is TradeStatus.Completed)
-            return Result.FromError(new InvalidOperationError("This trade has already been completed."));
+            return Result<TradeOfferDTO>.FromError(new InvalidOperationError("This trade has already been completed."));
 
         return await _mediator.Send(new UpdateTradeOffer.Request(tradeOfferID, null, TradeStatus.Unclaimed));
     }
 
-    public async Task<Result> CancelTradeOfferAsync(Guid tradeOfferID, Snowflake userID)
+    public async Task<Result<TradeOfferDTO>> CancelTradeOfferAsync(Guid tradeOfferID, Snowflake userID)
     {
         await _mediator.Send(new CreateUser.Request(userID));
         
         var trade = await _mediator.Send(new GetTradeOffer.Request(tradeOfferID));
 
         if (trade is null)
-            return Result.FromError(new NotFoundError("A trade with that ID doesn't exist."));
+            return Result<TradeOfferDTO>.FromError(new NotFoundError("A trade with that ID doesn't exist."));
 
         if (trade.OwnerID != userID)
-            return Result.FromError(new InvalidOperationError("You can't cancel a trade you didn't create."));
+            return Result<TradeOfferDTO>.FromError(new InvalidOperationError("You can't cancel a trade you didn't create."));
 
         if (trade.Status is TradeStatus.Unclaimed)
-            return Result.FromError(new InvalidOperationError("This trade is currently wasn't claimed to begin with."));
+            return Result<TradeOfferDTO>.FromError(new InvalidOperationError("This trade is currently wasn't claimed to begin with."));
         
         if (trade.ClaimerID is null)
-            return Result.FromError(new InvalidOperationError("You can only cancel a trade "));
+            return Result<TradeOfferDTO>.FromError(new InvalidOperationError("You can only cancel a trade "));
 
         if (trade.Status is TradeStatus.Completed)
-            return Result.FromError(new InvalidOperationError("The trade has already been completed."));
+            return Result<TradeOfferDTO>.FromError(new InvalidOperationError("The trade has already been completed."));
 
         return await _mediator.Send(new UpdateTradeOffer.Request(tradeOfferID, null, TradeStatus.Unclaimed));
     }
 
-    public async Task<Result> CompleteTradeOfferAsync(Guid tradeOfferID, Snowflake userID)
+    public async Task<Result<TradeOfferDTO>> CompleteTradeOfferAsync(Guid tradeOfferID, Snowflake userID)
     {
         await _mediator.Send(new CreateUser.Request(userID));
         
         var trade = await _mediator.Send(new GetTradeOffer.Request(tradeOfferID));
 
         if (trade is null)
-            return Result.FromError(new NotFoundError("A trade with that ID doesn't exist."));
+            return Result<TradeOfferDTO>.FromError(new NotFoundError("A trade with that ID doesn't exist."));
 
         if (trade.OwnerID != userID)
-            return Result.FromError(new InvalidOperationError("You can't complete a trade you didn't create."));
+            return Result<TradeOfferDTO>.FromError(new InvalidOperationError("You can't complete a trade you didn't create."));
 
         if (trade.Status is TradeStatus.Unclaimed)
-            return Result.FromError(new InvalidOperationError("This trade is currently wasn't claimed to begin with."));
+            return Result<TradeOfferDTO>.FromError(new InvalidOperationError("This trade is currently wasn't claimed to begin with."));
         
         if (trade.ClaimerID is null)
-            return Result.FromError(new InvalidOperationError("This trade hasn't been claimed. Did you mean to delist it?"));
+            return Result<TradeOfferDTO>.FromError(new InvalidOperationError("This trade hasn't been claimed. Did you mean to delist it?"));
 
         if (trade.Status is TradeStatus.Completed)
-            return Result.FromError(new InvalidOperationError("The trade has already been completed."));
+            return Result<TradeOfferDTO>.FromError(new InvalidOperationError("The trade has already been completed."));
 
         return await _mediator.Send(new UpdateTradeOffer.Request(tradeOfferID, null, TradeStatus.Completed));
     }
 
-    public async Task<Result> DeleteTradeOfferAsync(Guid tradeOfferID, Snowflake userID)
+    public async Task<Result<TradeOfferDTO>> DeleteTradeOfferAsync(Guid tradeOfferID, Snowflake userID)
     {
         await _mediator.Send(new CreateUser.Request(userID));
         
         var trade = await _mediator.Send(new GetTradeOffer.Request(tradeOfferID));
         
         if (trade is null)
-            return Result.FromError(new NotFoundError("A trade with that ID doesn't exist."));
+            return Result<TradeOfferDTO>.FromError(new NotFoundError("A trade with that ID doesn't exist."));
         
         if (trade.OwnerID != userID)
-            return Result.FromError(new InvalidOperationError("You can't delist a trade you didn't create."));
+            return Result<TradeOfferDTO>.FromError(new InvalidOperationError("You can't delist a trade you didn't create."));
         
         if (trade.Status is TradeStatus.Completed or TradeStatus.Delisted)
-            return Result.FromError(new InvalidOperationError("This trade has already been completed or delisted."));
+            return Result<TradeOfferDTO>.FromError(new InvalidOperationError("This trade has already been completed or delisted."));
         
         if (trade.Status is TradeStatus.InProgress)
-            return Result.FromError(new InvalidOperationError("This trade is currently in progress. You can't delist it."));
+            return Result<TradeOfferDTO>.FromError(new InvalidOperationError("This trade is currently in progress. You can't delist it."));
         
         return await _mediator.Send(new UpdateTradeOffer.Request(tradeOfferID, null, TradeStatus.Delisted));
     }
