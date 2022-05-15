@@ -27,6 +27,17 @@ public static class UpdateTradeOffer
             trade.Status = request.Status;
             trade.ClaimerID = request.ClaimerID;
 
+            trade.ClaimedAt = trade.Status switch
+            {
+                TradeStatus.Unclaimed => null,
+                TradeStatus.InProgress when trade.ClaimedAt is not null => trade.ClaimedAt,
+                TradeStatus.InProgress when trade.ClaimedAt is null => DateTime.UtcNow,
+                _ => trade.ClaimedAt
+            };
+            
+            if (trade.Status is TradeStatus.Completed)
+                trade.CompletedAt ??= DateTime.UtcNow;
+
             try
             {
                 await _db.SaveChangesAsync();
