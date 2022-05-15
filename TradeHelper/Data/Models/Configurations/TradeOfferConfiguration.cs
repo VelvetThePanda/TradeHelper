@@ -12,9 +12,6 @@ public class TradeOfferConfiguration : IEntityTypeConfiguration<TradeOffer>
         builder.Property(t => t.ID)
             .ValueGeneratedOnAdd();
 
-        builder.Property(t => t.CreatedAt)
-            .ValueGeneratedOnAdd();
-
         builder.HasOne(t => t.Owner)
             .WithMany(t => t.TradeOffers)
             .HasForeignKey(t => t.OwnerID);
