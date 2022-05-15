@@ -102,7 +102,7 @@ public class TradeService : ITradeService
         if (trade.OwnerID != userID)
             return Result<TradeOfferDTO>.FromError(new InvalidOperationError("You can't complete a trade you didn't create."));
 
-        if (trade.Status is TradeStatus.Unclaimed)
+        if (trade.Status is TradeStatus.Unclaimed or TradeStatus.Delisted)
             return Result<TradeOfferDTO>.FromError(new InvalidOperationError("This trade wasn't claimed to begin with."));
         
         if (trade.ClaimerID is null)
