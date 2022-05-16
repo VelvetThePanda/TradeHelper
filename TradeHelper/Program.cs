@@ -45,6 +45,6 @@ var host = Host.CreateDefaultBuilder()
     .Build();
 
 await host.Services.GetRequiredService<TradeContext>().Database.MigrateAsync();
-var res = await host.Services.GetRequiredService<SlashService>().UpdateSlashCommandsAsync(DiscordSnowflake.New(379378609942560770));
+await host.Services.GetRequiredService<SlashService>().UpdateSlashCommandsAsync(DiscordSnowflake.New(379378609942560770));
 
 await host.RunAsync();
