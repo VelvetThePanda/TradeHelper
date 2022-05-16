@@ -54,7 +54,12 @@ public class TradeListButtons : IButtonInteractiveEntity
 
         if (!tradeResult.IsDefined(out var trades))
         {
-            //TODO: Handle error
+            var responseResult = await _interactions.EditOriginalInteractionResponseAsync
+                (
+                    _context.ApplicationID,
+                    _context.Token,
+                    tradeResult.Error!.Message
+                );
 
             return Result.FromSuccess();
         }
