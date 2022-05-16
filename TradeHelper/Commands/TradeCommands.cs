@@ -170,7 +170,7 @@ public class TradeCommands : CommandGroup
         );
     }
 
-    [Command("cancel")]
+    [Command("complete")]
     [Description("Cancels a trade offer")]
     public async Task<IResult> ComleteAsync
     (
