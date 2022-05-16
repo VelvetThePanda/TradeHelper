@@ -153,9 +153,11 @@ public class TradeService : ITradeService
     
     public async Task<Result> RepUserAsync(Snowflake repGiverID, Snowflake userID, bool positive)
     {
-        var repper = await _mediator.Send(new CreateUser.Request(repGiverID));
-        
         var user = await _mediator.Send(new GetUser.Request(userID));
+        var repper = await _mediator.Send(new CreateUser.Request(repGiverID));
+
+        if (repper.LastRepTime > DateTime.UtcNow.AddHours(-1))
+            return Result.FromError(new InvalidOperationError("Woah there. You can only rep users once an hour."));
         
         if (user is null)
             return Result.FromError(new NotFoundError("That user hasn't had any trades, and thus cannot be given rep."));
