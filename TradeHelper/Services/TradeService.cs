@@ -111,7 +111,7 @@ public class TradeService : ITradeService
         if (trade.Status is TradeStatus.Completed)
             return Result<TradeOfferDTO>.FromError(new InvalidOperationError("The trade has already been completed."));
 
-        return await _mediator.Send(new UpdateTradeOffer.Request(tradeOfferID, null, TradeStatus.Completed));
+        return await _mediator.Send(new UpdateTradeOffer.Request(tradeOfferID, trade.ClaimerID, TradeStatus.Completed));
     }
 
     public async Task<Result<TradeOfferDTO>> DeleteTradeOfferAsync(Guid tradeOfferID, Snowflake userID)
