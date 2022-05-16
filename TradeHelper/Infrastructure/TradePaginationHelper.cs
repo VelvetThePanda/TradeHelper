@@ -44,7 +44,7 @@ public static class TradePaginationHelper
 
             var embed = new Embed
             {
-                Title = $"Trade ID: {trade.ID}",
+                Title = $"Trade ID: {trade.ID.ToString().ToUpper()}",
                 Description = sb.ToString(),
                 Colour = trade.Status switch
                 {
@@ -79,13 +79,8 @@ public static class TradePaginationHelper
     {
         var tradeCounts = trades.ToDictionary(t => t.OwnerID, t => trades.Count(tc => tc.OwnerID == t.OwnerID));
 
-        return trades.OrderByDescending(t =>
-        {
-            var ret = t.OwnerReputation / tradeCounts[t.OwnerID] + 0.15;
-
-            Console.WriteLine($"Owner Rep: {t.OwnerReputation} / Trades: {tradeCounts[t.OwnerID]} + 0.15 = {ret}");
-            
-            return ret;
-        });
+        return trades
+                .OrderByDescending(t => t.CreatedAt)
+                .ThenByDescending(t => t.OwnerReputation / tradeCounts[t.OwnerID] + 0.15);
     }
 }
