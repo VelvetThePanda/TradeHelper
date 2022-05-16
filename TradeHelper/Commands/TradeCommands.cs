@@ -224,7 +224,12 @@ public class TradeCommands : CommandGroup
         var result = await _trades.GetTradeOffersAsync(_context.GuildID.Value, filter is TradeViewType.Global ? null : userID);
 
         if (!result.IsDefined(out var trades))
-            return Result.FromSuccess(); // p sure this means there's no trades?
+            return await _interactions.EditOriginalInteractionResponseAsync
+            (
+                _context.ApplicationID,
+                _context.Token,
+                result.Error!.Message
+            );
 
         TradePaginationHelper.GetEmbedsAndComponents(trades, 1, filter.ToString().ToLower(), userID, out IReadOnlyList<IEmbed> embeds, out IReadOnlyList<IMessageComponent> components);
         
