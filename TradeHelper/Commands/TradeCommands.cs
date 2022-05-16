@@ -169,31 +169,6 @@ public class TradeCommands : CommandGroup
             "Successfully revoked trade offer. It will appear as unclaimed in the list of trade offers."
         );
     }
-
-    [Command("complete")]
-    [Description("Cancels a trade offer")]
-    public async Task<IResult> ComleteAsync
-    (
-        [Option("cancel_id")]
-        [Description("The trade to cancel.")]
-        string rawCancelID
-    )
-    {
-        if (!Guid.TryParse(rawCancelID, out var cancelID))
-            return await _interactions.EditOriginalInteractionResponseAsync(_context.ApplicationID, _context.Token, "That is not a valid cancel ID.");
-        
-        var cancelResult = await _trades.CancelTradeOfferAsync(cancelID, _context.User.ID);
-        
-        if (!cancelResult.IsDefined(out var cancel))
-            return await _interactions.EditOriginalInteractionResponseAsync(_context.ApplicationID, _context.Token, cancelResult.Error.Message);
-
-        return await _interactions.EditOriginalInteractionResponseAsync
-        (
-            _context.ApplicationID,
-            _context.Token,
-            "Successfully revoked trade offer. It will appear as unclaimed in the list of trade offers."
-        );
-    }
     
     [Command("complete")]
     [Description("Completes a trade offer")]
