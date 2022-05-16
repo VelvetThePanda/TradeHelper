@@ -141,5 +141,4 @@ public class UserCommands : CommandGroup
             "Reputation removed."
         );
     }
-    
 }
