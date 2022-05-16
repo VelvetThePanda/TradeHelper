@@ -133,7 +133,8 @@ public class TradeCommands : CommandGroup
             await _chennels.CreateMessageAsync
             (
                 channel.ID,
-                $"Your trade offer (ID: `{claim.ID}`) previously claimed by <@{_context.User.ID}> (**{_context.User.Username}#{_context.User.Discriminator:0000}**) has been **unclaimed**.\n"
+                $"Your trade offer (ID: `{claim.ID}`) previously claimed by <@{_context.User.ID}> " +
+                $"(**{_context.User.Username}#{_context.User.Discriminator:0000}**) has been **unclaimed**."
             );
         }
         
@@ -205,6 +206,31 @@ public class TradeCommands : CommandGroup
 
     }
     
+    [Command("delist")]
+    [Description("Delists a trade offer. This cannot be undone.")]
+    public async Task<IResult> DelistAsync
+    (
+        [Option("delist_id")]
+        [Description("The ID of the trade to delist.")]
+        string rawTradeID
+    )
+    {
+        if (!Guid.TryParse(rawTradeID, out var completeID))
+            return await _interactions.EditOriginalInteractionResponseAsync(_context.ApplicationID, _context.Token, "That is not a valid ID.");
+        
+        var delistResult = await _trades.DeleteTradeOfferAsync(completeID, _context.User.ID);
+        
+        if (!delistResult.IsDefined(out var complete))
+            return await _interactions.EditOriginalInteractionResponseAsync(_context.ApplicationID, _context.Token, delistResult.Error.Message);
+
+        return await _interactions.EditOriginalInteractionResponseAsync
+        (
+            _context.ApplicationID,
+            _context.Token,
+            "Successfully delisted trade offer. It will no longer appear on the public trade list, and cannot be claimed."
+        );
+    }
+
     [Command("list")]
     [Description("Lists all, a user's, or your own trade offer(s)")]
     public async Task<IResult> ListAsync
