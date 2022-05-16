@@ -151,14 +151,16 @@ public class TradeService : ITradeService
     public async Task<Result<TradeUserDTO>> GetTradeUserAsync(Snowflake userID) =>
         Result<TradeUserDTO>.FromSuccess(await _mediator.Send(new GetUser.Request(userID)));
     
-    public async Task<Result> RepUserAsync(Snowflake userID, bool positive)
+    public async Task<Result> RepUserAsync(Snowflake repGiverID, Snowflake userID, bool positive)
     {
+        var repper = await _mediator.Send(new CreateUser.Request(repGiverID));
+        
         var user = await _mediator.Send(new GetUser.Request(userID));
         
         if (user is null)
-            return Result.FromError(new NotFoundError("That user doesn't exist."));
+            return Result.FromError(new NotFoundError("That user hasn't had any trades, and thus cannot be given rep."));
 
-        await _mediator.Send(new UpdateUser.Request(userID, positive));
+        await _mediator.Send(new UpdateUser.Request(repGiverID, userID, positive));
 
         return Result.FromSuccess();
     }

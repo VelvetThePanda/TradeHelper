@@ -32,6 +32,7 @@ var host = Host.CreateDefaultBuilder()
             .AddDiscordCommands(true)
             .AddCommandTree()
             .WithCommandGroup<TradeCommands>()
+            .WithCommandGroup<UserCommands>()
             .Finish()
             .AddScoped<ITradeService, TradeService>()
             .AddInteractivity()
@@ -43,7 +44,7 @@ var host = Host.CreateDefaultBuilder()
     .UseConsoleLifetime()
     .Build();
 
-host.Services.GetRequiredService<TradeContext>().Database.MigrateAsync();
-host.Services.GetRequiredService<SlashService>().UpdateSlashCommandsAsync(DiscordSnowflake.New(379378609942560770));
+await host.Services.GetRequiredService<TradeContext>().Database.MigrateAsync();
+var res = await host.Services.GetRequiredService<SlashService>().UpdateSlashCommandsAsync(DiscordSnowflake.New(379378609942560770));
 
 await host.RunAsync();

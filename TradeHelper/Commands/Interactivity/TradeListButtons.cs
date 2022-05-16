@@ -70,5 +70,4 @@ public class TradeListButtons : IButtonInteractiveEntity
 
         return Result.FromSuccess();
     }
-    
 }

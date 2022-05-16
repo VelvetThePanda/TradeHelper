@@ -78,8 +78,9 @@ public interface ITradeService
     /// <summary>
     /// Reps a user.
     /// </summary>
+    /// <param name="repGiverID">The ID of the user that gave the rep.</param>
     /// <param name="userID">The ID of the user to rep.</param>
     /// <param name="positive">Whether the rep is positive.</param>
     /// <returns>A result that may or not have succeeded.</returns>
-    Task<Result> RepUserAsync(Snowflake userID, bool positive);
+    Task<Result> RepUserAsync(Snowflake repGiverID, Snowflake userID, bool positive);
 }
