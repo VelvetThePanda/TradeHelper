@@ -70,5 +70,5 @@ public class TradeOffer
     /// </summary>
     public string Requesting { get; set; }
     
-    public static TradeOfferDTO ToDTO(TradeOffer to) => new(to.ID, to.Status, to.GuildID, to.OwnerID, to.ClaimerID, to.CreatedAt, to.ClaimedAt, to.CompletedAt, to.ExpiresAt, to.Offering, to.Requesting);
+    public static TradeOfferDTO ToDTO(TradeOffer to) => new(to.ID, to.Status, to.GuildID, to.OwnerID, to.Owner?.Reputation ?? 0, to.ClaimerID, to.CreatedAt, to.ClaimedAt, to.CompletedAt, to.ExpiresAt, to.Offering, to.Requesting);
 }

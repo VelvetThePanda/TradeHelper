@@ -17,7 +17,10 @@ public static class GetTradeOffers
 
         public async Task<IReadOnlyList<TradeOfferDTO>> Handle(Request request, CancellationToken cancellationToken)
         {
-            var tradeQuery = _db.Trades.Where(t => t.GuildID == request.GuildID);
+            var tradeQuery = _db
+                .Trades
+                .Include(t => t.Owner)
+                .Where(t => t.GuildID == request.GuildID);
 
             if (request.UserID is Snowflake ID) 
                 tradeQuery = tradeQuery.Where(t => t.OwnerID == ID);
