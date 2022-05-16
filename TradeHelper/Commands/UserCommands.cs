@@ -66,7 +66,7 @@ public class UserCommands : CommandGroup
         
         // Needlessly complex algorithm to get map a color to a reputation. Safe to ignore.
         var embedColor = _repColors[Math.Clamp((int)((user.Reputation + _repColors.Length / 2) / (int)(Math.Max(user.TradeOffers.Count + user.ClaimedTrades.Count / 2, 4) / 4)) + 2, 0, _repColors.Length - 1)];
-        var averageTradeCompletionTime = user.ClaimedTrades.Count is 0 ? 0 : user.ClaimedTrades.Select(t => (t.CreatedAt - t.CompletedAt ?? default(TimeSpan)).TotalMinutes).Average();
+        var averageTradeCompletionTime = user.ClaimedTrades.Count is 0 ? 0 : (int)user.ClaimedTrades.Select(t => (t.CompletedAt - t.CreatedAt ?? default(TimeSpan)).TotalMinutes).Average();
         
         var embed = new Embed
         {
